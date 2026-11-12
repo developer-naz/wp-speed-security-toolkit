@@ -1,0 +1,63 @@
+# =====================================================================
+#  WordPress .htaccess Security & Speed Rules (Apache 2.4+)
+#  Author: Md Nazmul Islam (developer-naz) | License: MIT
+#
+#  How to use:
+#  - Paste these rules into the .htaccess file in your WordPress root,
+#    ABOVE the "# BEGIN WordPress" block. Never edit inside that block.
+#  - Back up your existing .htaccess first. If the site shows a
+#    500 error, restore the backup and add the rules one section at a time.
+#  - On LiteSpeed servers these rules also work. On Nginx they do not.
+# =====================================================================
+
+# ---------- SECURITY ----------
+
+# Protect wp-config.php
+<Files wp-config.php>
+    Require all denied
+</Files>
+
+# Block access to sensitive and informational files
+<FilesMatch "^(readme\.html|license\.txt|wp-config-sample\.php|\.htaccess|\.user\.ini|error_log|debug\.log)$">
+    Require all denied
+</FilesMatch>
+
+# Block XML-RPC (remove this block if you use Jetpack or the WP mobile app)
+<Files xmlrpc.php>
+    Require all denied
+</Files>
+
+# Disable directory browsing
+Options -Indexes
+
+# ---------- SPEED: GZIP COMPRESSION ----------
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/css text/xml
+    AddOutputFilterByType DEFLATE application/javascript application/json application/xml
+    AddOutputFilterByType DEFLATE image/svg+xml font/ttf font/otf
+</IfModule>
+
+# ---------- SPEED: BROWSER CACHING ----------
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresDefault                          "access plus 1 month"
+    ExpiresByType text/html                 "access plus 0 seconds"
+    ExpiresByType text/css                  "access plus 1 year"
+    ExpiresByType application/javascript    "access plus 1 year"
+    ExpiresByType image/jpeg                "access plus 1 year"
+    ExpiresByType image/png                 "access plus 1 year"
+    ExpiresByType image/webp                "access plus 1 year"
+    ExpiresByType image/avif                "access plus 1 year"
+    ExpiresByType image/svg+xml             "access plus 1 year"
+    ExpiresByType image/x-icon              "access plus 1 year"
+    ExpiresByType font/woff2                "access plus 1 year"
+</IfModule>
+
+# =====================================================================
+#  SEPARATE FILE: wp-content/uploads/.htaccess
+#  Create this file to stop uploaded PHP files (malware) from running.
+# =====================================================================
+#
+# <FilesMatch "\.(php|phtml|php[0-9])$">
+#     Require all denied
+# </FilesMatch>
